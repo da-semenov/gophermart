@@ -23,7 +23,7 @@ func (config *AppConfig) Init() error {
 
 	pflag.StringVarP(&config.ServerAddress, "a", "a", config.ServerAddress, "Http-server address")
 	pflag.StringVarP(&config.DatabaseDSN, "d", "d", config.DatabaseDSN, "Database connection string")
-	pflag.StringVarP(&config.AccrualSystemAddress, "r", "r", config.AccrualSystemAddress, "Accrual Service Address")
+	pflag.StringVarP(&config.AccrualSystemAddress, "r", "r", config.AccrualSystemAddress, "Accrual system address")
 	pflag.BoolVarP(&config.ReInit, "c", "c", config.ReInit, "Re-init database")
 	pflag.Parse()
 
