@@ -1,6 +1,6 @@
 package database
 
-const createUsers = "create table if not exists users (id numeric primary key, login varchar not null, pass varchar not null);\n" +
+const createUsers = "create table if not exists users (id numeric primary key, login varchar not null, pass varchar not null, active numeric not null default 1);\n" +
 	"create sequence if not exists seq_user increment by 1 no minvalue no maxvalue start with 1 cache 10 owned by users.id;\n" +
 	"create unique index if not exists user_login_idx on users (login);"
 
