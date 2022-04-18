@@ -4,8 +4,11 @@ import (
 	"context"
 	conf "github.com/da-semenov/gophermart/internal/app/config"
 	"github.com/da-semenov/gophermart/internal/app/storage"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 	"log"
+	"net/http"
 )
 
 func RunApp() {
@@ -38,4 +41,13 @@ func RunApp() {
 		logger.Fatal("can't init database structure", zap.Error(err))
 		return
 	}
+	router := chi.NewRouter()
+	router.Use(middleware.CleanPath)
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Route("/", func(r chi.Router) {
+	})
+
+	log.Println("starting server on 8080...")
+	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 }
