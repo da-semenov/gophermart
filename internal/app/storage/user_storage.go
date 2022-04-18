@@ -6,6 +6,7 @@ import (
 	"github.com/da-semenov/gophermart/internal/app/config"
 	"github.com/da-semenov/gophermart/internal/app/database"
 	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"go.uber.org/zap"
 )
 
 type UserRepository struct {
@@ -29,8 +30,19 @@ func (ur *UserRepository) Save(ctx context.Context, login string, pass string) e
 		ur.l.Info("UserRepository: empty password authorization attempt")
 		return errors.New("empty password")
 	}
-	err := ur.h.Execute(ctx, database.CreateUser, login, pass)
-	return err
+	var userID int
+	row, err := ur.h.QueryRow(ctx, database.CreateUser, login, pass)
+	err = row.Scan(&userID)
+	if err != nil {
+		ur.l.Error("UserRepository: can't get user_id", zap.Error(err))
+		return err
+	}
+	err = ur.h.Execute(ctx, database.CreateAccount, userID)
+	if err != nil {
+		ur.l.Error("UserRepository: can't create account for user", zap.Error(err))
+		return err
+	}
+	return nil
 }
 
 func (ur *UserRepository) Check(ctx context.Context, login string, pass string) (bool, error) {
