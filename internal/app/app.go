@@ -41,6 +41,19 @@ func RunApp() {
 		logger.Fatal("can't init database structure", zap.Error(err))
 		return
 	}
+
+	userStorage, err := storage.NewUserRepository(postgresHandler, logger)
+	if err != nil {
+		logger.Fatal("can't init user storage", zap.Error(err))
+		return
+	}
+
+	orderStorage, err := storage.NewOrderRepository(postgresHandler, logger)
+	if err != nil {
+		logger.Fatal("can't init order storage", zap.Error(err))
+		return
+	}
+
 	router := chi.NewRouter()
 	router.Use(middleware.CleanPath)
 	router.Use(middleware.Logger)
