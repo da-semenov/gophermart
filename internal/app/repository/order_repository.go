@@ -1,12 +1,12 @@
-package storage
+package repository
 
 import (
 	"context"
 	"errors"
-	"github.com/da-semenov/gophermart/internal/app/config"
 	"github.com/da-semenov/gophermart/internal/app/database"
+	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"github.com/da-semenov/gophermart/internal/app/models"
-	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
 	"go.uber.org/zap"
@@ -14,10 +14,10 @@ import (
 
 type OrderRepository struct {
 	h basedbhandler.DBHandler
-	l *config.Logger
+	l *infrastructure.Logger
 }
 
-func NewOrderRepository(dbHandler basedbhandler.DBHandler, log *config.Logger) (models.OrderRepository, error) {
+func NewOrderRepository(dbHandler basedbhandler.DBHandler, log *infrastructure.Logger) (models.OrderRepository, error) {
 	var repo OrderRepository
 	if dbHandler == nil {
 		return nil, errors.New("can't init order repository")

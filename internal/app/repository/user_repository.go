@@ -1,12 +1,12 @@
-package storage
+package repository
 
 import (
 	"context"
 	"errors"
-	"github.com/da-semenov/gophermart/internal/app/config"
 	"github.com/da-semenov/gophermart/internal/app/database"
+	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"github.com/da-semenov/gophermart/internal/app/models"
-	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgerrcode"
 	"go.uber.org/zap"
@@ -14,10 +14,10 @@ import (
 
 type UserRepository struct {
 	h basedbhandler.DBHandler
-	l *config.Logger
+	l *infrastructure.Logger
 }
 
-func NewUserRepository(dbHandler basedbhandler.DBHandler, log *config.Logger) (models.UserRepository, error) {
+func NewUserRepository(dbHandler basedbhandler.DBHandler, log *infrastructure.Logger) (models.UserRepository, error) {
 	var repo UserRepository
 	if dbHandler == nil {
 		return nil, errors.New("can't init user repository")

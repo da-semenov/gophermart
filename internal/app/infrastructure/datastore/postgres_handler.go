@@ -1,9 +1,9 @@
-package storage
+package datastore
 
 import (
 	"context"
 	"fmt"
-	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )

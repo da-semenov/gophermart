@@ -1,10 +1,10 @@
-package storage
+package repository
 
 import (
 	"context"
 	"fmt"
 	"github.com/da-semenov/gophermart/internal/app/database"
-	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 )
 
 func InitDatabase(ctx context.Context, h basedbhandler.DBHandler) error {

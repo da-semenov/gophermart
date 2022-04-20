@@ -1,11 +1,11 @@
-package storage
+package datastore
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/da-semenov/gophermart/internal/app/config"
-	"github.com/da-semenov/gophermart/internal/app/storage/basedbhandler"
+	"github.com/da-semenov/gophermart/internal/app/infrastructure"
+	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -14,10 +14,10 @@ import (
 
 type PostgresHandlerTX struct {
 	pool *pgxpool.Pool
-	log  *config.Logger
+	log  *infrastructure.Logger
 }
 
-func NewPostgresqlHandlerTX(ctx context.Context, dataSource string, log *config.Logger) (*PostgresHandlerTX, error) {
+func NewPostgresqlHandlerTX(ctx context.Context, dataSource string, log *infrastructure.Logger) (*PostgresHandlerTX, error) {
 	poolConfig, err := pgxpool.ParseConfig(dataSource)
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"github.com/da-semenov/gophermart/internal/app/domain/model"
 	"github.com/go-chi/jwtauth/v5"
 	"io"
 	"net/http"
@@ -12,8 +13,12 @@ type Auth struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
+func ErrMessage(msg string) model.Error {
+	return model.Error{Msg: msg}
+}
+
 func WriteResponse(w http.ResponseWriter, status int, message interface{}) error {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/requests")
 	w.WriteHeader(status)
 	b, err := json.Marshal(message)
 	if err != nil {
