@@ -18,7 +18,7 @@ func ErrMessage(msg string) model.Error {
 }
 
 func WriteResponse(w http.ResponseWriter, status int, message interface{}) error {
-	w.Header().Set("Content-Type", "application/requests")
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	b, err := json.Marshal(message)
 	if err != nil {

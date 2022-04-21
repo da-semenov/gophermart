@@ -17,7 +17,7 @@ type PostgresHandlerTX struct {
 	log  *infrastructure.Logger
 }
 
-func NewPostgresqlHandlerTX(ctx context.Context, dataSource string, log *infrastructure.Logger) (*PostgresHandlerTX, error) {
+func NewPostgresHandlerTX(ctx context.Context, dataSource string, log *infrastructure.Logger) (*PostgresHandlerTX, error) {
 	poolConfig, err := pgxpool.ParseConfig(dataSource)
 	if err != nil {
 		return nil, err

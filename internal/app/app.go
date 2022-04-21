@@ -3,10 +3,11 @@ package app
 import (
 	"context"
 	conf "github.com/da-semenov/gophermart/internal/app/config"
+	"github.com/da-semenov/gophermart/internal/app/handlers"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure/datastore"
 	"github.com/da-semenov/gophermart/internal/app/repository"
+	"github.com/da-semenov/gophermart/internal/app/service"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -29,6 +30,10 @@ func RunApp() {
 	if err != nil {
 		logger.Fatal("can't init postgres handler", zap.Error(err))
 	}
+	postgresHandlerTx, err := datastore.NewPostgresHandlerTX(context.Background(), config.DatabaseDSN, logger)
+	if err != nil {
+		logger.Fatal("can't init postgres handler", zap.Error(err))
+	}
 
 	if config.ReInit {
 		err = repository.ClearDatabase(context.Background(), postgresHandler)
@@ -37,18 +42,24 @@ func RunApp() {
 			return
 		}
 	}
-	err = repository.InitDatabase(context.Background(), postgresHandler)
+	err = repository.InitDatabase(context.Background(), postgresHandlerTx)
 	if err != nil {
 		logger.Fatal("can't init database structure", zap.Error(err))
 		return
 	}
 
+	userRepository, err := repository.NewUserRepository(postgresHandlerTx, logger)
+	if err != nil {
+		logger.Fatal("can't init user repository", zap.Error(err))
+		return
+	}
+
+	authService := service.NewAuthService(userRepository, logger)
+	auth := handlers.NewAuth("secret")
+	authHandler := handlers.NewAuthHandler(authService, auth, logger)
+
 	router := chi.NewRouter()
-	router.Use(middleware.CleanPath)
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Route("/", func(r chi.Router) {
-	})
+	publicRoutes(router, authHandler, postgresHandlerTx, logger)
 
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
