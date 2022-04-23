@@ -7,6 +7,7 @@ import (
 	"github.com/da-semenov/gophermart/internal/app/mymiddleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth/v5"
 )
 
 func publicRoutes(
@@ -22,5 +23,24 @@ func publicRoutes(
 		router.Use(mymiddleware.Transactional(postgresHandlerTx, log))
 		router.Post("/api/user/register", handler.Register)
 		router.Post("/api/user/login", handler.Login)
+	})
+}
+
+func protectedOrderRoutes(
+	r chi.Router,
+	tokenAuth *jwtauth.JWTAuth,
+	postgresHandlerTx *datastore.PostgresHandlerTX,
+	handler *handlers.OrderHandler,
+	log *infrastructure.Logger,
+) {
+	r.Group(func(router chi.Router) {
+		router.Use(middleware.CleanPath)
+		router.Use(middleware.Logger)
+		router.Use(middleware.Recoverer)
+		router.Use(jwtauth.Verifier(tokenAuth))
+		router.Use(jwtauth.Authenticator)
+		router.Use(mymiddleware.Transactional(postgresHandlerTx, log))
+		router.Post("/api/user/orders", handler.RegisterNewOrder)
+		router.Get("/api/user/orders", handler.GetOrderList)
 	})
 }

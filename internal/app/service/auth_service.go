@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/da-semenov/gophermart/internal/app/domain/model"
+	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"github.com/da-semenov/gophermart/internal/app/models"
 	"go.uber.org/zap"
@@ -32,14 +32,14 @@ func (s *AuthService) checkPasswordHash(pass string, hash string) bool {
 	return err == nil
 }
 
-func (s *AuthService) Register(ctx context.Context, user *model.User) (*model.User, error) {
+func (s *AuthService) Register(ctx context.Context, user *domain.User) (*domain.User, error) {
 	if user == nil {
 		s.log.Debug("AuthService: Register. Got nil user")
-		return nil, model.ErrBadParam
+		return nil, domain.ErrBadParam
 	}
 	if (user.Login == "") || (user.Pass == "") {
 		s.log.Warn("AuthService: Register. Validation error", zap.String("user", user.Login))
-		return nil, model.ErrBadParam
+		return nil, domain.ErrBadParam
 	}
 
 	hp, err := s.hashPassword(user.Pass)
@@ -55,14 +55,14 @@ func (s *AuthService) Register(ctx context.Context, user *model.User) (*model.Us
 	return user, nil
 }
 
-func (s *AuthService) Check(ctx context.Context, user *model.User) (*model.User, error) {
+func (s *AuthService) Check(ctx context.Context, user *domain.User) (*domain.User, error) {
 	if user == nil {
 		s.log.Debug("AuthService: Check. Got nil user")
-		return nil, model.ErrBadParam
+		return nil, domain.ErrBadParam
 	}
 	if user.Login == "" {
 		s.log.Warn("AuthService: Check. Validation error", zap.String("user", user.Login))
-		return nil, model.ErrBadParam
+		return nil, domain.ErrBadParam
 	}
 	modelUser, err := s.dbUser.GetUserByLogin(ctx, user.Login)
 	if err != nil {

@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/da-semenov/gophermart/internal/app/domain/model"
+	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"go.uber.org/zap"
 	"net/http"
 )
 
 type AuthService interface {
-	Register(ctx context.Context, user *model.User) (*model.User, error)
-	Check(ctx context.Context, user *model.User) (*model.User, error)
+	Register(ctx context.Context, user *domain.User) (*domain.User, error)
+	Check(ctx context.Context, user *domain.User) (*domain.User, error)
 }
 
 type AuthHandler struct {
@@ -31,7 +31,7 @@ func NewAuthHandler(as AuthService, auth *Auth, l *infrastructure.Logger) *AuthH
 }
 
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var user model.User
+	var user domain.User
 	b, err := getRequestBody(r)
 	if err != nil {
 		h.log.Error("AuthHandler:can't get request body", zap.Error(err))
@@ -51,12 +51,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	u, err := h.authService.Register(ctx, &user)
 	if err != nil {
 		h.log.Error("AuthHandler:received an error", zap.Error(err))
-		if errors.Is(err, model.ErrDuplicateKey) {
+		if errors.Is(err, domain.ErrDuplicateKey) {
 			if err = WriteResponse(w, http.StatusConflict, ErrMessage("логин уже занят")); err != nil {
 				h.log.Error("AuthHandler: can't write response", zap.Error(err))
 			}
 			return
-		} else if errors.Is(err, model.ErrBadParam) {
+		} else if errors.Is(err, domain.ErrBadParam) {
 			if err = WriteResponse(w, http.StatusBadRequest, ErrMessage("неверный формат запроса")); err != nil {
 				h.log.Error("AuthHandler: can't write response", zap.Error(err))
 			}
@@ -94,7 +94,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	var user model.User
+	var user domain.User
 	b, err := getRequestBody(r)
 	if err != nil {
 		h.log.Error("AuthHandler:can't get request body", zap.Error(err))

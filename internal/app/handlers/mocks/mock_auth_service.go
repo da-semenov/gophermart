@@ -6,9 +6,9 @@ package mocks
 
 import (
 	context "context"
+	model "github.com/da-semenov/gophermart/internal/app/domain"
 	reflect "reflect"
 
-	model "github.com/da-semenov/gophermart/internal/app/domain/model"
 	gomock "github.com/golang/mock/gomock"
 )
 

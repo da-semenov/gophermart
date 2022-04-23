@@ -54,12 +54,21 @@ func RunApp() {
 		return
 	}
 
+	orderRepository, err := repository.NewOrderRepository(postgresHandlerTx, logger)
+	if err != nil {
+		logger.Fatal("can't init order repopsitory", zap.Error(err))
+		return
+	}
+
 	authService := service.NewAuthService(userRepository, logger)
+	orderService := service.NewOrderService(orderRepository, logger)
 	auth := handlers.NewAuth("secret")
 	authHandler := handlers.NewAuthHandler(authService, auth, logger)
+	orderHandler := handlers.NewOrderHandler(orderService, auth, logger)
 
 	router := chi.NewRouter()
 	publicRoutes(router, authHandler, postgresHandlerTx, logger)
+	protectedOrderRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, orderHandler, logger)
 
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))

@@ -3,7 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github.com/da-semenov/gophermart/internal/app/domain/model"
+	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/go-chi/jwtauth/v5"
 	"io"
 	"net/http"
@@ -13,8 +13,8 @@ type Auth struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
-func ErrMessage(msg string) model.Error {
-	return model.Error{Msg: msg}
+func ErrMessage(msg string) domain.Error {
+	return domain.Error{Msg: msg}
 }
 
 func WriteResponse(w http.ResponseWriter, status int, message interface{}) error {

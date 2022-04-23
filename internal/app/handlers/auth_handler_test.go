@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/da-semenov/gophermart/internal/app/domain/model"
+	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/da-semenov/gophermart/internal/app/handlers/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -52,7 +52,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				body:  "{\"model\": \"14\",\"test\": \"test\"}",
 				login: "",
 				pass:  "",
-				err:   model.ErrBadParam,
+				err:   domain.ErrBadParam,
 			},
 		},
 		{name: "AuthHandler. Register. Test 3. Bad Query2",
@@ -64,7 +64,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				body:  "{\"login3\": \"login\"}",
 				login: "",
 				pass:  "",
-				err:   model.ErrBadParam,
+				err:   domain.ErrBadParam,
 			},
 		},
 		{name: "AuthHandler. Register. Test 4. Empty Query",
@@ -76,7 +76,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				body:  "",
 				login: "",
 				pass:  "",
-				err:   model.ErrBadParam,
+				err:   domain.ErrBadParam,
 			},
 		},
 		{name: "AuthHandler. Register. Test 5. Login Busy",
@@ -88,7 +88,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				body:  "{\"login\": \"%s\",\"password\": \"%s\"}",
 				login: "duplicateLogin",
 				pass:  "anyPass",
-				err:   model.ErrDuplicateKey,
+				err:   domain.ErrDuplicateKey,
 			},
 		},
 		{name: "AuthHandler. Register. Test 6. Service Error",
@@ -100,7 +100,7 @@ func TestAuthHandler_Register(t *testing.T) {
 				body:  "{\"login\": \"%s\",\"password\": \"%s\"}",
 				login: "anyLogin",
 				pass:  "anyPass",
-				err:   model.ErrBadParam,
+				err:   domain.ErrBadParam,
 			},
 		},
 	}
@@ -115,8 +115,8 @@ func TestAuthHandler_Register(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			authService.EXPECT().
-				Register(ctx, &model.User{Login: tt.args.login, Pass: tt.args.pass}).
-				Return(&model.User{ID: 10, Login: tt.args.login, Pass: tt.args.pass}, tt.args.err).
+				Register(ctx, &domain.User{Login: tt.args.login, Pass: tt.args.pass}).
+				Return(&domain.User{ID: 10, Login: tt.args.login, Pass: tt.args.pass}, tt.args.err).
 				AnyTimes()
 			body := strings.NewReader(fmt.Sprintf(tt.args.body, tt.args.login, tt.args.pass))
 			request := httptest.NewRequest("POST", "/api/user/register", body)
@@ -183,7 +183,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				login:   "",
 				pass:    "",
 				allowed: false,
-				err:     model.ErrBadParam,
+				err:     domain.ErrBadParam,
 			},
 		},
 		{name: "AuthHandler. Check. Test 3. Access Denied",
@@ -209,7 +209,7 @@ func TestAuthHandler_Login(t *testing.T) {
 				login:   "",
 				pass:    "",
 				allowed: false,
-				err:     model.ErrBadParam,
+				err:     domain.ErrBadParam,
 			},
 		},
 
@@ -236,12 +236,12 @@ func TestAuthHandler_Login(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			var resObj *model.User
+			var resObj *domain.User
 			if tt.args.allowed {
-				resObj = &model.User{ID: 10, Login: tt.args.login, Pass: tt.args.pass}
+				resObj = &domain.User{ID: 10, Login: tt.args.login, Pass: tt.args.pass}
 			}
 			authService.EXPECT().
-				Check(ctx, &model.User{Login: tt.args.login, Pass: tt.args.pass}).
+				Check(ctx, &domain.User{Login: tt.args.login, Pass: tt.args.pass}).
 				Return(resObj, tt.args.err).
 				AnyTimes()
 

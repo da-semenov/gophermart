@@ -18,13 +18,13 @@ type OrderRepository struct {
 }
 
 func NewOrderRepository(dbHandler basedbhandler.DBHandler, log *infrastructure.Logger) (models.OrderRepository, error) {
-	var repo OrderRepository
+	var target OrderRepository
 	if dbHandler == nil {
 		return nil, errors.New("can't init order repository")
 	}
-	repo.h = dbHandler
-	repo.l = log
-	return &repo, nil
+	target.h = dbHandler
+	target.l = log
+	return &target, nil
 }
 
 func (or *OrderRepository) Save(ctx context.Context, order *models.Order) error {
@@ -93,6 +93,45 @@ func (or *OrderRepository) FindByUser(ctx context.Context, userID int) ([]models
 		err := rows.Scan(&o.ID, &o.Num, &o.UserID, &o.Status, &o.UploadAt, &o.UpdatedAt)
 		if err != nil {
 			or.l.Error("OrderRepository: scan rows error", zap.String("query", database.FindOrdersByUser), zap.Int("userID", userID), zap.Error(err))
+			break
+		}
+		resArray = append(resArray, o)
+	}
+	return resArray, nil
+}
+
+func (or *OrderRepository) LockOrder(ctx context.Context, OrderNum string) (*models.Order, error) {
+	var res models.Order
+	row, err := or.h.QueryRow(ctx, database.GetOrderByNumForUpdate, OrderNum)
+	if err != nil {
+		or.l.Error("OrderRepository: can't get order for update", zap.Error(err))
+		return nil, err
+	}
+	err = row.Scan(&res.ID, &res.UserID, &res.Num, &res.Status, &res.UploadAt, &res.UpdatedAt)
+
+	if err != nil {
+		or.l.Error("OrderRepository: can't get account for update", zap.Error(err))
+		if err.Error() == "no rows in result set" {
+			return nil, &models.NoRowFound
+		} else {
+			return nil, err
+		}
+	}
+	return &res, nil
+}
+
+func (or *OrderRepository) FindNotProcessed(ctx context.Context) ([]models.Order, error) {
+	rows, err := or.h.Query(ctx, database.FindOrderByStatuses, models.OrderStatusProcessing, models.OrderStatusNew, models.OrderStatusRegistered, "", "")
+	var resArray []models.Order
+	if err != nil {
+		or.l.Error("OrderRepository: request error", zap.String("query", database.FindOrderByStatuses), zap.Error(err))
+		return nil, err
+	}
+	for rows.Next() {
+		var o models.Order
+		err := rows.Scan(&o.ID, &o.Num, &o.UserID, &o.Status, &o.UploadAt, &o.UpdatedAt)
+		if err != nil {
+			or.l.Error("OrderRepository: scan rows error", zap.String("query", database.FindOrderByStatuses), zap.Error(err))
 			break
 		}
 		resArray = append(resArray, o)

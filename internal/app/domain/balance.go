@@ -1,4 +1,4 @@
-package model
+package domain
 
 type Balance struct {
 	Current   int `json:"current"`

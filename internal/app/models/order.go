@@ -11,6 +11,8 @@ type OrderRepository interface {
 	GetByNum(ctx context.Context, num string) (*Order, error)
 	UpdateStatus(ctx context.Context, userID int, num string, statusNew string) error
 	FindByUser(ctx context.Context, userID int) ([]Order, error)
+	LockOrder(ctx context.Context, OrderNum string) (*Order, error)
+	FindNotProcessed(ctx context.Context) ([]Order, error)
 }
 
 type Order struct {
@@ -27,4 +29,12 @@ const (
 	OrderStatusProcessing = "PROCESSING"
 	OrderStatusInvalid    = "INVALID"
 	OrderStatusProcessed  = "PROCESSED"
+	OrderStatusRegistered = "REGISTERED"
 )
+
+func IsFinal(status string) bool {
+	if status == OrderStatusInvalid || status == OrderStatusProcessed {
+		return true
+	}
+	return false
+}
