@@ -11,3 +11,6 @@ type Operation struct {
 	Amount        int
 	ProcessedAt   time.Time
 }
+
+const OperationDebit = "DEBIT"
+const OperationCredit = "CREDIT"

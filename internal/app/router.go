@@ -44,3 +44,23 @@ func protectedOrderRoutes(
 		router.Get("/api/user/orders", handler.GetOrderList)
 	})
 }
+
+func protectedBalanceRoutes(
+	r chi.Router,
+	tokenAuth *jwtauth.JWTAuth,
+	postgresHandlerTx *datastore.PostgresHandlerTX,
+	handler *handlers.BalanceHandler,
+	log *infrastructure.Logger,
+) {
+	r.Group(func(router chi.Router) {
+		router.Use(middleware.CleanPath)
+		router.Use(middleware.Logger)
+		router.Use(middleware.Recoverer)
+		router.Use(jwtauth.Verifier(tokenAuth))
+		router.Use(jwtauth.Authenticator)
+		router.Use(mymiddleware.Transactional(postgresHandlerTx, log))
+		router.Get("/api/user/balance", handler.GetBalance)
+		router.Post("/api/user/balance/withdraw", handler.Withdraw)
+		router.Get("/api/user/balance/withdrawals", handler.GetWithdrawalsList)
+	})
+}

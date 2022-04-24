@@ -56,19 +56,28 @@ func RunApp() {
 
 	orderRepository, err := repository.NewOrderRepository(postgresHandlerTx, logger)
 	if err != nil {
-		logger.Fatal("can't init order repopsitory", zap.Error(err))
+		logger.Fatal("can't init order repository", zap.Error(err))
+		return
+	}
+
+	balanceRepository, err := repository.NewBalanceRepository(postgresHandlerTx, logger)
+	if err != nil {
+		logger.Fatal("can't init balance repository", zap.Error(err))
 		return
 	}
 
 	authService := service.NewAuthService(userRepository, logger)
 	orderService := service.NewOrderService(orderRepository, logger)
+	balanceService := service.NewBalanceService(balanceRepository, logger)
 	auth := handlers.NewAuth("secret")
 	authHandler := handlers.NewAuthHandler(authService, auth, logger)
 	orderHandler := handlers.NewOrderHandler(orderService, auth, logger)
+	balanceHandler := handlers.NewBalanceHandler(balanceService, auth, logger)
 
 	router := chi.NewRouter()
 	publicRoutes(router, authHandler, postgresHandlerTx, logger)
 	protectedOrderRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, orderHandler, logger)
+	protectedBalanceRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, balanceHandler, logger)
 
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
