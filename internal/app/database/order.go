@@ -10,4 +10,4 @@ const GetOrderByID = "select id, user_id, num, status, upload_at, updated_at fro
 const GetOrderByNum = "select id, user_id, num, status, upload_at, updated_at from orders where num=$1;"
 
 const GetOrderByNumForUpdate = "select id, user_id, num, status, upload_at, updated_at from orders where num = $1 for update"
-const FindOrderByStatuses = "select id, user_id, num, status, upload_at, updated_at from orders where status in ($1, $2, $3, $4, $5)"
+const FindOrderByStatuses = "select id, user_id, num, status, upload_at, updated_at from orders where status in ($1, $2, $3, $4, $5) limit $6"
