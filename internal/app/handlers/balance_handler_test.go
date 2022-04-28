@@ -73,6 +73,7 @@ func TestBalanceHandler_GetBalance(t *testing.T) {
 			h := http.HandlerFunc(target.GetBalance)
 			h.ServeHTTP(w, request)
 			res := w.Result()
+			defer res.Body.Close()
 
 			contentType := res.Header.Get("Content-type")
 			assert.Equal(t, tt.wants.responseCode, res.StatusCode, "Expected status %d, got %d", tt.wants.responseCode, res.StatusCode)
@@ -165,6 +166,7 @@ func TestBalanceHandler_Withdraw(t *testing.T) {
 			h := http.HandlerFunc(target.Withdraw)
 			h.ServeHTTP(w, request)
 			res := w.Result()
+			defer res.Body.Close()
 
 			contentType := res.Header.Get("Content-type")
 			assert.Equal(t, tt.wants.responseCode, res.StatusCode, "Expected status %d, got %d", tt.wants.responseCode, res.StatusCode)
@@ -223,6 +225,7 @@ func TestBalanceHandler_WithdrawalsList(t *testing.T) {
 			h := http.HandlerFunc(target.GetWithdrawalsList)
 			h.ServeHTTP(w, request)
 			res := w.Result()
+			defer res.Body.Close()
 
 			contentType := res.Header.Get("Content-type")
 			assert.Equal(t, tt.wants.responseCode, res.StatusCode, "Expected status %d, got %d", tt.wants.responseCode, res.StatusCode)
