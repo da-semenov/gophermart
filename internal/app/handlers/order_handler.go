@@ -92,7 +92,7 @@ func (h *OrderHandler) RegisterNewOrder(w http.ResponseWriter, r *http.Request) 
 			return
 		}
 	}
-	if err = WriteResponse(w, http.StatusAccepted, ""); err != nil {
+	if err = WriteResponse(w, http.StatusAccepted, nil); err != nil {
 		h.log.Error("OrderHandler: can't write response", zap.Error(err))
 	}
 	h.log.Info(fmt.Sprintf("Order %s successfully registered", order.Num))

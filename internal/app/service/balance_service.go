@@ -66,7 +66,7 @@ func (s *BalanceService) Withdraw(ctx context.Context, obj *domain.Withdraw, use
 		return domain.ErrBadParam
 	}
 	if !CheckOrderNum(obj.OrderNum) {
-		s.log.Debug("BalanceService: Withdraw. Order num validation error")
+		s.log.Debug("BalanceService: Withdraw. Order num validation error", zap.String("orderNum", obj.OrderNum))
 		return domain.ErrBadOrderNum
 	}
 	account, err := s.dbBalance.LockAccount(ctx, userID)

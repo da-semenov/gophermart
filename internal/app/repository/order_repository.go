@@ -130,7 +130,7 @@ func (or *OrderRepository) FindNotProcessed(ctx context.Context) ([]models.Order
 	}
 	for rows.Next() {
 		var o models.Order
-		err := rows.Scan(&o.ID, &o.Num, &o.UserID, &o.Status, &o.UploadAt, &o.UpdatedAt)
+		err := rows.Scan(&o.ID, &o.UserID, &o.Num, &o.Status, &o.UploadAt, &o.UpdatedAt)
 		if err != nil {
 			or.l.Error("OrderRepository: scan rows error", zap.String("query", database.FindOrderByStatuses), zap.Error(err))
 			break

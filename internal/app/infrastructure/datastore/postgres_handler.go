@@ -6,6 +6,7 @@ import (
 	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"time"
 )
 
 type PostgresHandler struct {
@@ -14,6 +15,23 @@ type PostgresHandler struct {
 
 type PostgresRow struct {
 	Rows *pgx.Row
+}
+
+func NewPostgresHandler(ctx context.Context, dataSource string) (*PostgresHandler, error) {
+	poolConfig, err := pgxpool.ParseConfig(dataSource)
+	if err != nil {
+		return nil, err
+	}
+	poolConfig.MaxConns = 5
+	poolConfig.MinConns = 2
+	poolConfig.MaxConnIdleTime = time.Second * 120
+	pool, err := pgxpool.ConnectConfig(ctx, poolConfig)
+	if err != nil {
+		return nil, err
+	}
+	postgresqlHandler := new(PostgresHandler)
+	postgresqlHandler.pool = pool
+	return postgresqlHandler, nil
 }
 
 func (handler *PostgresHandler) Execute(ctx context.Context, statement string, args ...interface{}) error {
@@ -96,18 +114,4 @@ func (handler *PostgresHandler) Close() {
 	if handler != nil {
 		handler.pool.Close()
 	}
-}
-
-func NewPostgresHandler(ctx context.Context, dataSource string) (*PostgresHandler, error) {
-	poolConfig, err := pgxpool.ParseConfig(dataSource)
-	if err != nil {
-		return nil, err
-	}
-	pool, err := pgxpool.ConnectConfig(ctx, poolConfig)
-	if err != nil {
-		return nil, err
-	}
-	postgresHandler := new(PostgresHandler)
-	postgresHandler.pool = pool
-	return postgresHandler, nil
 }

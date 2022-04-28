@@ -13,18 +13,18 @@ type Auth struct {
 	tokenAuth *jwtauth.JWTAuth
 }
 
-func ErrMessage(msg string) domain.Error {
-	return domain.Error{Msg: msg}
+func ErrMessage(msg string) []byte {
+	b, err := json.Marshal(domain.Error{Msg: msg})
+	if err != nil {
+		return nil
+	}
+	return b
 }
 
-func WriteResponse(w http.ResponseWriter, status int, message interface{}) error {
+func WriteResponse(w http.ResponseWriter, status int, message []byte) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	b, err := json.Marshal(message)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(b)
+	_, err := w.Write(message)
 	if err != nil {
 		http.Error(w, "can't write response", http.StatusBadRequest)
 	}

@@ -3,7 +3,7 @@ package models
 type Account struct {
 	ID      int
 	UserID  int
-	Balance int
-	Debit   int
-	Credit  int
+	Balance float32
+	Debit   float32
+	Credit  float32
 }
