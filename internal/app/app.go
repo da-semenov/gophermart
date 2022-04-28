@@ -25,18 +25,14 @@ func RunApp() {
 	if err != nil {
 		logger.Fatal("can't init configuration", zap.Error(err))
 	}
-
-	postgresHandler, err := datastore.NewPostgresHandler(context.Background(), config.DatabaseDSN)
-	if err != nil {
-		logger.Fatal("can't init postgres handler", zap.Error(err))
-	}
+	
 	postgresHandlerTx, err := datastore.NewPostgresHandlerTX(context.Background(), config.DatabaseDSN, logger)
 	if err != nil {
 		logger.Fatal("can't init postgres handler", zap.Error(err))
 	}
 
 	if config.ReInit {
-		err = repository.ClearDatabase(context.Background(), postgresHandler)
+		err = repository.ClearDatabase(context.Background(), postgresHandlerTx)
 		if err != nil {
 			logger.Fatal("can't clear database structure", zap.Error(err))
 			return

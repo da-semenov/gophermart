@@ -47,7 +47,7 @@ func (handler *PostgresHandlerTX) getTx(ctx context.Context) (tx pgx.Tx, err err
 			handler.log.Error("PostgresHandlerTX: can't get tx", zap.Error(err))
 		}
 	}()
-	ctxValue := ctx.Value("tx")
+	ctxValue := ctx.Value(basedbhandler.TransactionKey("tx"))
 	if ctxValue == nil {
 		handler.log.Debug("PostgresHandlerTX: can't get tx")
 		return nil, errors.New("can't get tx: nil value got")

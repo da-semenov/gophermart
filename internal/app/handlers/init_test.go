@@ -20,7 +20,7 @@ const Datasource = "postgresql://practicum_test:practicum_test@127.0.0.1:5432/pr
 
 func TestMain(m *testing.M) {
 	log, _ = zap.NewDevelopment()
-	postgresHandler, _ := datastore.NewPostgresHandler(context.Background(), Datasource)
+	postgresHandler, _ := datastore.NewPostgresHandlerTX(context.Background(), Datasource, log)
 	repository.ClearDatabase(context.Background(), postgresHandler)
 	repository.InitDatabase(context.Background(), postgresHandler)
 	repo, _ := repository.NewUserRepository(postgresHandler, log)
