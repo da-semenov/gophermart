@@ -4,6 +4,7 @@ import (
 	"context"
 	conf "github.com/da-semenov/gophermart/internal/app/config"
 	"github.com/da-semenov/gophermart/internal/app/handlers"
+	"github.com/da-semenov/gophermart/internal/app/infrastructure/client"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure/datastore"
 	"github.com/da-semenov/gophermart/internal/app/repository"
 	"github.com/da-semenov/gophermart/internal/app/service"
@@ -25,7 +26,7 @@ func RunApp() {
 	if err != nil {
 		logger.Fatal("can't init configuration", zap.Error(err))
 	}
-	
+
 	postgresHandlerTx, err := datastore.NewPostgresHandlerTX(context.Background(), config.DatabaseDSN, logger)
 	if err != nil {
 		logger.Fatal("can't init postgres handler", zap.Error(err))
@@ -70,11 +71,17 @@ func RunApp() {
 	orderHandler := handlers.NewOrderHandler(orderService, auth, logger)
 	balanceHandler := handlers.NewBalanceHandler(balanceService, auth, logger)
 
+	accrualClient := client.NewAccrualClient(config.AccrualSystemAddress, logger)
+	gophermartClient := client.NewGophermartClient(config.ServerAddress, logger)
+	accrualService := service.NewAccrualService(orderRepository, balanceRepository, accrualClient, gophermartClient, logger)
+	accrualHandler := handlers.NewAccrualHandler(accrualService, logger)
+
 	router := chi.NewRouter()
-	publicRoutes(router, authHandler, postgresHandlerTx, logger)
+	publicRoutes(router, authHandler, accrualHandler, postgresHandlerTx, logger)
 	protectedOrderRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, orderHandler, logger)
 	protectedBalanceRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, balanceHandler, logger)
 
+	go accrualService.StartProcessJob(1)
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 }

@@ -11,7 +11,7 @@ type AppConfig struct {
 	ServerAddress        string `env:"RUN_ADDRESS" envDefault:":8080"`
 	DatabaseDSN          string `env:"DATABASE_URI" envDefault:"postgresql://practicum:practicum@127.0.0.1:5432/gophermart"`
 	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS" envDefault:"http://localhost:3000"`
-	ReInit               bool   `env:"REINIT" envDefault:"false"`
+	ReInit               bool   `env:"REINIT" envDefault:"true"`
 }
 
 func (config *AppConfig) Init() error {
