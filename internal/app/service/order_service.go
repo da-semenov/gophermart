@@ -37,7 +37,7 @@ func (s *OrderService) mapOrderModelToDomain(src *models.Order) *domain.Order {
 		UserID:   src.UserID,
 		Num:      src.Num,
 		Status:   src.Status,
-		Accrual:  0,
+		Accrual:  src.Accrual,
 		UploadAt: src.UploadAt.Truncate(time.Second),
 	}
 }

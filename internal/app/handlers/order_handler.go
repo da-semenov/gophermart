@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure"
@@ -63,35 +62,35 @@ func (h *OrderHandler) RegisterNewOrder(w http.ResponseWriter, r *http.Request) 
 	}
 	order.UserID = u
 	err = h.orderService.Save(ctx, &order)
+	var (
+		statusCode int
+		msg        string
+	)
 	if err != nil {
 		h.log.Error("OrderHandler:received an error", zap.Error(err))
-		if errors.Is(err, domain.ErrOrderRegistered) {
-			if err = WriteResponse(w, http.StatusOK, ErrMessage("номер заказа уже был загружен этим пользователем")); err != nil {
-				h.log.Error("OrderHandler: can't write response", zap.Error(err))
-			}
-			return
-		} else if errors.Is(err, domain.ErrOrderRegisteredByAnotherUser) {
-			if err = WriteResponse(w, http.StatusConflict, ErrMessage("номер заказа уже был загружен другим пользователем")); err != nil {
-				h.log.Error("OrderHandler: can't write response", zap.Error(err))
-			}
-			return
-		} else if errors.Is(err, domain.ErrBadParam) {
-			if err = WriteResponse(w, http.StatusBadRequest, ErrMessage("неверный формат номера заказа")); err != nil {
-				h.log.Error("OrderHandler: can't write response", zap.Error(err))
-			}
-			return
-		} else if errors.Is(err, domain.ErrBadOrderNum) {
-			if err = WriteResponse(w, http.StatusUnprocessableEntity, ErrMessage("неверный формат номера заказа")); err != nil {
-				h.log.Error("OrderHandler: can't write response", zap.Error(err))
-			}
-			return
-		} else {
-			if err = WriteResponse(w, http.StatusInternalServerError, ErrMessage("внутренняя ошибка сервера")); err != nil {
-				h.log.Error("OrderHandler: can't write response", zap.Error(err))
-			}
-			return
+		switch err {
+		case domain.ErrOrderRegistered:
+			statusCode = http.StatusOK
+			msg = "номер заказа уже был загружен этим пользователем"
+		case domain.ErrOrderRegisteredByAnotherUser:
+			statusCode = http.StatusConflict
+			msg = "номер заказа уже был загружен другим пользователем"
+		case domain.ErrBadParam:
+			statusCode = http.StatusBadRequest
+			msg = "неверный формат запроса"
+		case domain.ErrBadOrderNum:
+			statusCode = http.StatusUnprocessableEntity
+			msg = "неверный формат номера заказа"
+		default:
+			statusCode = http.StatusInternalServerError
+			msg = "внутренняя ошибка сервера"
 		}
+		if err = WriteResponse(w, statusCode, ErrMessage(msg)); err != nil {
+			h.log.Error("OrderHandler: can't write response", zap.Error(err))
+		}
+		return
 	}
+
 	if err = WriteResponse(w, http.StatusAccepted, nil); err != nil {
 		h.log.Error("OrderHandler: can't write response", zap.Error(err))
 	}

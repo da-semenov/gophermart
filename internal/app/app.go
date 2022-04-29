@@ -81,7 +81,7 @@ func RunApp() {
 	protectedOrderRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, orderHandler, logger)
 	protectedBalanceRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, balanceHandler, logger)
 
-	go accrualService.StartProcessJob(10)
+	go accrualService.StartProcessJob(1)
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 }

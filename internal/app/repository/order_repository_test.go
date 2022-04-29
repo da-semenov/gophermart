@@ -81,8 +81,10 @@ func TestOrderRepository_UpdateStatus(t *testing.T) {
 			if err := target.Save(context.Background(), &tt.order); (err != nil) != tt.wantErr {
 				t.Errorf("Save() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			newOrder := tt.order
+			newOrder.Status = tt.statusNew
 			fmt.Println("update saved object")
-			if err := target.UpdateStatus(context.Background(), &tt.order); (err != nil) != tt.wantErr {
+			if err := target.UpdateStatus(context.Background(), &newOrder); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateStatus() error = %v, wantErr %v", err, tt.wantErr)
 			}
 

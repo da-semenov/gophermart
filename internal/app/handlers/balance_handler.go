@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"github.com/da-semenov/gophermart/internal/app/domain"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"go.uber.org/zap"
@@ -101,22 +100,27 @@ func (h *BalanceHandler) Withdraw(w http.ResponseWriter, r *http.Request) {
 	}
 	err = h.balanceService.Withdraw(ctx, &withdraw, userID)
 	if err != nil {
+		var (
+			statusCode int
+			msg        string
+		)
 		h.log.Error("BalanceHandler:Withdraw error", zap.Error(err))
-		if errors.Is(err, domain.ErrNotEnoughFunds) {
-			if err = WriteResponse(w, http.StatusPaymentRequired, ErrMessage("на счету недостаточно средств")); err != nil {
-				h.log.Error("BalanceHandler: can't write response", zap.Error(err))
-			}
-		} else if errors.Is(err, domain.ErrBadOrderNum) {
-			if err = WriteResponse(w, http.StatusUnprocessableEntity, ErrMessage("неверный номер заказа")); err != nil {
-				h.log.Error("BalanceHandler: can't write response", zap.Error(err))
-			}
-		} else {
-			if err = WriteResponse(w, http.StatusInternalServerError, ErrMessage("внутренняя ошибка сервера")); err != nil {
-				h.log.Error("BalanceHandler: can't write response", zap.Error(err))
-			}
+		switch err {
+		case domain.ErrNotEnoughFunds:
+			statusCode = http.StatusPaymentRequired
+			msg = "на счету недостаточно средств"
+		case domain.ErrBadOrderNum:
+			statusCode = http.StatusUnprocessableEntity
+			msg = "неверный номер заказа"
+		default:
+			statusCode = http.StatusInternalServerError
+			msg = "внутренняя ошибка сервера"
 		}
-		return
+		if err = WriteResponse(w, statusCode, ErrMessage(msg)); err != nil {
+			h.log.Error("BalanceHandler: can't write response", zap.Error(err))
+		}
 	}
+
 	if err = WriteResponse(w, http.StatusOK, nil); err != nil {
 		h.log.Error("BalanceHandler: can't write response", zap.Error(err))
 	}

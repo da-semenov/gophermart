@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"github.com/da-semenov/gophermart/internal/app/handlers/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +25,7 @@ func TestAccrualHandler_ProcessOrder(t *testing.T) {
 	}{
 		{name: "AuthHandler. Register. Test 1. Positive",
 			wants: wants{
-				responseCode: http.StatusOK,
+				responseCode: http.StatusCreated,
 				contentType:  "application/json",
 			},
 			args: args{
@@ -41,6 +42,8 @@ func TestAccrualHandler_ProcessOrder(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			accrualService.EXPECT().ProcessOrder(ctx, tt.args.orderNum).Return(nil)
 			request := httptest.NewRequest("POST", "/api/orders/"+tt.args.orderNum, nil)
 			w := httptest.NewRecorder()
 			h := http.HandlerFunc(target.ProcessOrder)

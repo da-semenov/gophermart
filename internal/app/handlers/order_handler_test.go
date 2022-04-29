@@ -52,16 +52,7 @@ func TestOrderHandler_RegisterNewOrder(t *testing.T) {
 				err:       domain.ErrBadParam,
 			},
 		},
-		{name: "OrderHandler. RegisterNewOrder. Test 3. Invalid order num",
-			wants: wants{
-				responseCode: http.StatusUnprocessableEntity,
-				contentType:  "application/json",
-			},
-			args: args{
-				body: "Invalid order num",
-				err:  domain.ErrBadParam,
-			},
-		},
+
 		{name: "OrderHandler. RegisterNewOrder. Test 4. Order registered early by current user",
 			wants: wants{
 				responseCode: http.StatusOK,
