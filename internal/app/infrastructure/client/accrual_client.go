@@ -61,6 +61,10 @@ func (c *AccrualClient) GetAccrual(ctx context.Context, orderNum string) (*domai
 
 	if resp.StatusCode == http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			c.log.Error("AccrualClient: GetAccrual. Can't get request body", zap.Error(err))
+			return nil, err
+		}
 		var accrual domain.Accrual
 		err = json.Unmarshal(body, &accrual)
 		if err != nil {

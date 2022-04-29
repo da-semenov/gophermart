@@ -24,6 +24,7 @@ type AccrualService struct {
 	accrualClient    AccrualClient
 	gophermartClient GophermartClient
 	log              *infrastructure.Logger
+	enable           bool
 }
 
 func NewAccrualService(
@@ -42,11 +43,14 @@ func NewAccrualService(
 	return &target
 }
 
-func (s *AccrualService) StartProcessJob(latencyInSec time.Duration) {
-	t := time.NewTicker(latencyInSec * time.Second)
+func (s *AccrualService) StartProcessJob(latency time.Duration) {
+	if !s.enable {
+		return
+	}
+	t := time.NewTicker(latency * time.Second)
 	defer t.Stop()
-	for true {
-		_ = <-t.C
+	for {
+		<-t.C
 		ctx := context.Background()
 		s.process(ctx)
 	}
