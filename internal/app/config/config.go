@@ -12,6 +12,8 @@ type AppConfig struct {
 	DatabaseDSN          string `env:"DATABASE_URI" envDefault:"postgresql://practicum:practicum@127.0.0.1:5432/gophermart"`
 	AccrualSystemAddress string `env:"ACCRUAL_SYSTEM_ADDRESS" envDefault:"http://localhost:3000"`
 	ReInit               bool   `env:"REINIT" envDefault:"true"`
+	ValidateOrderNum     bool   `env:"VALIDATE_ORDER" envDefault:"true"`
+	EnableAccrual        bool   `env:"ENABLE_ACCRUAL" envDefault:"true"`
 }
 
 func (config *AppConfig) Init() error {
@@ -25,6 +27,8 @@ func (config *AppConfig) Init() error {
 	pflag.StringVarP(&config.DatabaseDSN, "d", "d", config.DatabaseDSN, "Database connection string")
 	pflag.StringVarP(&config.AccrualSystemAddress, "r", "r", config.AccrualSystemAddress, "Accrual system address")
 	pflag.BoolVarP(&config.ReInit, "c", "c", config.ReInit, "Re-init database")
+	pflag.BoolVarP(&config.ValidateOrderNum, "v", "v", config.ValidateOrderNum, "Validate order num")
+	pflag.BoolVarP(&config.EnableAccrual, "y", "y", config.EnableAccrual, "Enable accrual processing")
 	pflag.Parse()
 
 	return nil

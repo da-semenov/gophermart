@@ -64,7 +64,7 @@ func RunApp() {
 	}
 
 	authService := service.NewAuthService(userRepository, logger)
-	orderService := service.NewOrderService(orderRepository, logger)
+	orderService := service.NewOrderService(orderRepository, logger, config.ValidateOrderNum)
 	balanceService := service.NewBalanceService(balanceRepository, logger)
 	auth := handlers.NewAuth("secret")
 	authHandler := handlers.NewAuthHandler(authService, auth, logger)
@@ -73,7 +73,7 @@ func RunApp() {
 
 	accrualClient := client.NewAccrualClient(config.AccrualSystemAddress, logger)
 	gophermartClient := client.NewGophermartClient(config.ServerAddress, logger)
-	accrualService := service.NewAccrualService(orderRepository, balanceRepository, accrualClient, gophermartClient, logger)
+	accrualService := service.NewAccrualService(orderRepository, balanceRepository, accrualClient, gophermartClient, logger, config.EnableAccrual)
 	accrualHandler := handlers.NewAccrualHandler(accrualService, logger)
 
 	router := chi.NewRouter()
@@ -81,7 +81,7 @@ func RunApp() {
 	protectedOrderRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, orderHandler, logger)
 	protectedBalanceRoutes(router, auth.GetJWTAuth(), postgresHandlerTx, balanceHandler, logger)
 
-	go accrualService.StartProcessJob(1)
+	go accrualService.StartProcessJob(10)
 	log.Println("starting server on 8080...")
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 }

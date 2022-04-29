@@ -10,14 +10,16 @@ import (
 )
 
 type OrderService struct {
-	dbOrder models.OrderRepository
-	log     *infrastructure.Logger
+	dbOrder          models.OrderRepository
+	log              *infrastructure.Logger
+	EnableValidation bool
 }
 
-func NewOrderService(orderRepo models.OrderRepository, log *infrastructure.Logger) *OrderService {
+func NewOrderService(orderRepo models.OrderRepository, log *infrastructure.Logger, enableValidation bool) *OrderService {
 	var target OrderService
 	target.dbOrder = orderRepo
 	target.log = log
+	target.EnableValidation = enableValidation
 	return &target
 }
 
@@ -56,7 +58,7 @@ func (s *OrderService) Save(ctx context.Context, order *domain.Order) error {
 		s.log.Debug("OrderService: Save. Validation error")
 		return domain.ErrBadParam
 	}
-	if !CheckOrderNum(order.Num) {
+	if s.EnableValidation && !CheckOrderNum(order.Num) {
 		s.log.Debug("OrderService: Save. Order num validation error")
 		return domain.ErrBadOrderNum
 	}

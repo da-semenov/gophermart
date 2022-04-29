@@ -74,8 +74,8 @@ func (or *OrderRepository) GetByNum(ctx context.Context, num string) (*models.Or
 	return &res, nil
 }
 
-func (or *OrderRepository) UpdateStatus(ctx context.Context, userID int, num string, statusNew string) error {
-	err := or.h.Execute(ctx, database.UpdateOrderStatus, userID, num, statusNew)
+func (or *OrderRepository) UpdateStatus(ctx context.Context, order *models.Order) error {
+	err := or.h.Execute(ctx, database.UpdateOrderStatus, order.ID, order.Status, order.UpdatedAt)
 	return err
 }
 
