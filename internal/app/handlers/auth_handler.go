@@ -61,10 +61,9 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 				h.log.Error("AuthHandler: can't write response", zap.Error(err))
 			}
 			return
-		} else {
-			if err = WriteResponse(w, http.StatusInternalServerError, ErrMessage("внутренняя ошибка сервера")); err != nil {
-				h.log.Error("AuthHandler: can't write response", zap.Error(err))
-			}
+		}
+		if err = WriteResponse(w, http.StatusInternalServerError, ErrMessage("внутренняя ошибка сервера")); err != nil {
+			h.log.Error("AuthHandler: can't write response", zap.Error(err))
 			return
 		}
 	}

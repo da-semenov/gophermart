@@ -59,7 +59,6 @@ func (s *AccrualService) StartProcessJob(latency time.Duration) {
 }
 
 func (s *AccrualService) process(ctx context.Context) {
-	s.log.Debug("AccrualService: process. Start process job")
 	orderList, err := s.dbOrder.FindNotProcessed(ctx)
 	if err != nil {
 		s.log.Error("AccrualService: process. Can't get order list", zap.Error(err))
@@ -68,7 +67,6 @@ func (s *AccrualService) process(ctx context.Context) {
 	for _, order := range orderList {
 		s.gophermartClient.ProcessRequest(ctx, order.Num)
 	}
-	s.log.Debug("AccrualService: process. Process job finished")
 }
 
 func (s *AccrualService) ProcessOrder(ctx context.Context, orderNum string) error {
