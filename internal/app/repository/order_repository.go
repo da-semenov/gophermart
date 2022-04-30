@@ -100,9 +100,9 @@ func (or *OrderRepository) FindByUser(ctx context.Context, userID int) ([]models
 	return resArray, nil
 }
 
-func (or *OrderRepository) LockOrder(ctx context.Context, OrderNum string) (*models.Order, error) {
+func (or *OrderRepository) LockOrder(ctx context.Context, orderNum string) (*models.Order, error) {
 	var res models.Order
-	row, err := or.h.QueryRow(ctx, database.GetOrderByNumForUpdate, OrderNum)
+	row, err := or.h.QueryRow(ctx, database.GetOrderByNumForUpdate, orderNum)
 	if err != nil {
 		or.l.Error("OrderRepository: can't get order for update", zap.Error(err))
 		return nil, err

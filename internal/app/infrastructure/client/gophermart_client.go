@@ -35,7 +35,6 @@ func (c *GophermartClient) ProcessRequest(ctx context.Context, orderNum string) 
 	} else if c.serviceAddress == "localhost:8080" {
 		address = "http://" + address
 	}
-	
 	c.log.Debug("GophermartClient: ", zap.String("url", address))
 	req, err := http.NewRequest("POST", address, nil)
 	if err != nil {

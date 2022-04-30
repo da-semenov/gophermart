@@ -192,7 +192,7 @@ func TestBalanceHandler_WithdrawalsList(t *testing.T) {
 		{
 			name: "BalanceHandler. WithdrawalsList. Test 1. Positive",
 			args: args{
-				res:   []domain.Withdrawal{domain.Withdrawal{}},
+				res:   []domain.Withdrawal{},
 				error: nil,
 			},
 			wants: wants{

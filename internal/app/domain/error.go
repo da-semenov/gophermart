@@ -9,14 +9,11 @@ type Error struct {
 }
 
 var ErrDuplicateKey = errors.New("duplicate key")
-var ErrNotFound = errors.New("no rows in result set")
 var ErrBadParam = errors.New("bad param occurred")
-var ErrUnauthorized = errors.New("user unauthorized")
+var ErrTooManyRequest = errors.New("too many request to remote service")
+var ErrRemoteServiceError = errors.New("remote service error")
 
 var ErrOrderRegistered = errors.New("order registered early")
 var ErrOrderRegisteredByAnotherUser = errors.New("order registered early by another user")
 var ErrBadOrderNum = errors.New("bad order num")
 var ErrNotEnoughFunds = errors.New("not enough funds")
-
-var ErrTooManyRequest = errors.New("too many request to remote service")
-var ErrRemoteServiceError = errors.New("remote service error")

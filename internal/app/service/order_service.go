@@ -44,6 +44,7 @@ func (s *OrderService) mapOrderModelToDomain(src *models.Order) *domain.Order {
 
 func (s *OrderService) mapOrderListModelToDomain(src []models.Order) (resList []domain.Order) {
 	for _, o := range src {
+		o := o
 		resList = append(resList, *s.mapOrderModelToDomain(&o))
 	}
 	return resList
@@ -67,9 +68,10 @@ func (s *OrderService) Save(ctx context.Context, order *domain.Order) error {
 	if err == nil {
 		if exOrder.UserID == order.UserID {
 			return domain.ErrOrderRegistered
-		} else {
-			return domain.ErrOrderRegisteredByAnotherUser
 		}
+
+		return domain.ErrOrderRegisteredByAnotherUser
+
 	} else if err != &models.NoRowFound {
 		s.log.Error("OrderService: Save. Unexpected error", zap.Error(err))
 		return err

@@ -69,15 +69,14 @@ func (s *AuthService) Check(ctx context.Context, user *domain.User) (*domain.Use
 		if errors.Is(err, &models.NoRowFound) {
 			s.log.Debug("AuthService: Check. User not found in database", zap.String("login", user.Login))
 			return nil, nil
-		} else {
-			s.log.Error("AuthService: Check.", zap.Error(err))
-			return nil, err
 		}
+		s.log.Error("AuthService: Check.", zap.Error(err))
+		return nil, err
 	}
 	if s.checkPasswordHash(user.Pass, modelUser.Pass) {
 		user.ID = modelUser.ID
 		return user, nil
-	} else {
-		return nil, nil
 	}
+
+	return nil, nil
 }

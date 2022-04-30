@@ -12,10 +12,8 @@ import (
 )
 
 func TestOrderService_Save(t *testing.T) {
-
 	type args struct {
-		order   *domain.Order
-		repoErr error
+		order *domain.Order
 	}
 	type wants struct {
 		wantErr bool
@@ -99,7 +97,6 @@ func TestOrderService_Save(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-
 			err := target.Save(ctx, tt.args.order)
 			if tt.wants.wantErr {
 				if !tt.wants.anyErr {
@@ -113,10 +110,8 @@ func TestOrderService_Save(t *testing.T) {
 }
 
 func TestOrderService_Save2(t *testing.T) {
-
 	type args struct {
-		order   *domain.Order
-		repoErr error
+		order *domain.Order
 	}
 	type wants struct {
 		wantErr bool

@@ -20,11 +20,10 @@ func TestAuthHandler_Register(t *testing.T) {
 		contentType  string
 	}
 	type args struct {
-		body      string
-		login     string
-		pass      string
-		wantError bool
-		err       error
+		body  string
+		login string
+		pass  string
+		err   error
 	}
 	tests := []struct {
 		name  string
@@ -278,11 +277,10 @@ func TestAuthHandler_RegisterInt(t *testing.T) {
 		contentType  string
 	}
 	type args struct {
-		body      string
-		login     string
-		pass      string
-		wantError bool
-		err       error
+		body  string
+		login string
+		pass  string
+		err   error
 	}
 	tests := []struct {
 		name  string

@@ -75,8 +75,8 @@ func (c *AccrualClient) GetAccrual(ctx context.Context, orderNum string) (*domai
 	} else if resp.StatusCode == http.StatusTooManyRequests {
 		c.log.Error("AccrualClient: GetAccrual.Too many requests:", zap.Int("statusCode", resp.StatusCode))
 		return nil, domain.ErrTooManyRequest
-	} else {
-		c.log.Error("AccrualClient: GetAccrual.Unexpected response from remote service:", zap.Int("statusCode", resp.StatusCode))
-		return nil, domain.ErrRemoteServiceError
 	}
+
+	c.log.Error("AccrualClient: GetAccrual.Unexpected response from remote service:", zap.Int("statusCode", resp.StatusCode))
+	return nil, domain.ErrRemoteServiceError
 }
