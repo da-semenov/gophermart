@@ -1,0 +1,27 @@
+version: '3.3'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: gophermart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  gophermart:
+    container_name: gophermart
+    image: golang:1.17
+    working_dir: "/home/gophermart/"
+    entrypoint: "go run ./cmd/gophermart"
+    environment:
+      RUN_ADDRESS: 0.0.0.0:8000
+      DATABASE_URI: postgresql://postgres:postgres@postgres/gophermart
+    volumes:
+      - ./:/home/gophermart
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"

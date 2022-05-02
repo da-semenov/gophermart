@@ -1,4 +1,4 @@
-package database
+package db_queries
 
 const CreateOperation = "INSERT INTO operations (id, account_id, order_id, order_num, operation_type, amount, processed_at)\n" +
 	"VALUES(nextval('seq_order'), $1, $2, $3, $4, $5, $6);"

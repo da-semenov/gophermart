@@ -1,4 +1,4 @@
-package database
+package db_queries
 
 const CreateAccount = "INSERT INTO accounts (id, user_id) VALUES(nextval('seq_account'), $1);"
 

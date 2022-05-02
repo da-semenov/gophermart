@@ -35,13 +35,13 @@ func RunApp() {
 	if config.ReInit {
 		err = repository.ClearDatabase(context.Background(), postgresHandlerTx)
 		if err != nil {
-			logger.Fatal("can't clear database structure", zap.Error(err))
+			logger.Fatal("can't clear db-queries structure", zap.Error(err))
 			return
 		}
 	}
 	err = repository.InitDatabase(context.Background(), postgresHandlerTx)
 	if err != nil {
-		logger.Fatal("can't init database structure", zap.Error(err))
+		logger.Fatal("can't init db-queries structure", zap.Error(err))
 		return
 	}
 

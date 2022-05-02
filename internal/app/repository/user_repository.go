@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/da-semenov/gophermart/internal/app/database"
+	"github.com/da-semenov/gophermart/internal/app/db-queries"
 	"github.com/da-semenov/gophermart/internal/app/infrastructure"
 	"github.com/da-semenov/gophermart/internal/app/models"
 	"github.com/da-semenov/gophermart/internal/app/repository/basedbhandler"
@@ -29,7 +29,7 @@ func NewUserRepository(dbHandler basedbhandler.DBHandler, log *infrastructure.Lo
 
 func (ur *UserRepository) Save(ctx context.Context, login string, pass string) (int, error) {
 	var userID int
-	row, err := ur.h.QueryRow(ctx, database.GetNextUserID)
+	row, err := ur.h.QueryRow(ctx, db_queries.GetNextUserID)
 	if err != nil {
 		ur.l.Error("UserRepository: can't get userID")
 		return 0, err
@@ -40,12 +40,12 @@ func (ur *UserRepository) Save(ctx context.Context, login string, pass string) (
 		return 0, err
 	}
 
-	err = ur.h.Execute(ctx, database.CreateUser, userID, login, pass)
+	err = ur.h.Execute(ctx, db_queries.CreateUser, userID, login, pass)
 	if err != nil {
 		ur.l.Error("UserRepository: can't create user", zap.Error(err))
 		return 0, err
 	}
-	err = ur.h.Execute(ctx, database.CreateAccount, userID)
+	err = ur.h.Execute(ctx, db_queries.CreateAccount, userID)
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		if pgErr.Code == pgerrcode.UniqueViolation {
@@ -68,7 +68,7 @@ func (ur *UserRepository) Check(ctx context.Context, login string, pass string) 
 		ur.l.Info("UserRepository: empty password authorization attempt")
 		return false, errors.New("empty password")
 	}
-	row, err := ur.h.QueryRow(ctx, database.CheckUser, login, pass)
+	row, err := ur.h.QueryRow(ctx, db_queries.CheckUser, login, pass)
 	if err != nil {
 		return false, err
 	}
@@ -81,7 +81,7 @@ func (ur *UserRepository) Check(ctx context.Context, login string, pass string) 
 }
 
 func (ur *UserRepository) GetUserByLogin(ctx context.Context, login string) (*models.User, error) {
-	row, err := ur.h.QueryRow(ctx, database.GetUserByLogin, login)
+	row, err := ur.h.QueryRow(ctx, db_queries.GetUserByLogin, login)
 	if err != nil {
 		return nil, err
 	}
