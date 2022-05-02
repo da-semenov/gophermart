@@ -1,4 +1,4 @@
-package db_queries
+package dbqueries
 
 const CreateUser = "INSERT INTO users (id, login, pass) VALUES($1, $2, $3) returning id;"
 

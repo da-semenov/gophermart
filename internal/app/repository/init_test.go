@@ -17,12 +17,12 @@ var Log *zap.Logger
 func initDatabase(ctx context.Context, h *datastore.PostgresHandlerTX) {
 	err := ClearDatabase(ctx, h)
 	if err != nil {
-		fmt.Println("can't clear db-queries")
+		fmt.Println("can't clear dbqueries")
 		panic(err)
 	}
 	err = InitDatabase(ctx, h)
 	if err != nil {
-		fmt.Println("can't init db-queries")
+		fmt.Println("can't init dbqueries")
 		panic(err)
 	}
 }

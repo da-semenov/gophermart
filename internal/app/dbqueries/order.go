@@ -1,4 +1,4 @@
-package db_queries
+package dbqueries
 
 const CreateOrder = "INSERT INTO orders (id, user_id, num, status, upload_at, updated_at) VALUES(nextval('seq_order'),  $1, $2, $3, $4, $5);"
 

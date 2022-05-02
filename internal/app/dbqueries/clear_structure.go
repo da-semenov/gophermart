@@ -1,4 +1,4 @@
-package db_queries
+package dbqueries
 
 const clearUsers = "drop table if exists users cascade;\n"
 const clearAccounts = "drop table if exists accounts cascade;\n"

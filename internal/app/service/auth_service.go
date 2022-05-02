@@ -67,7 +67,7 @@ func (s *AuthService) Check(ctx context.Context, user *domain.User) (*domain.Use
 	modelUser, err := s.dbUser.GetUserByLogin(ctx, user.Login)
 	if err != nil {
 		if errors.Is(err, &models.NoRowFound) {
-			s.log.Debug("AuthService: Check. User not found in db-queries", zap.String("login", user.Login))
+			s.log.Debug("AuthService: Check. User not found in dbqueries", zap.String("login", user.Login))
 			return nil, nil
 		}
 		s.log.Error("AuthService: Check.", zap.Error(err))
